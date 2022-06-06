@@ -5,9 +5,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.swing.JTextField;
 
 //MySQL's Connector/J driver is a Type 4 driver
 
@@ -38,18 +41,18 @@ public class DB {
 
         if (dbExists) {
             loadFrame.updateProgress("Using " + DB_NAME, 50);
-            System.out.println(DB_NAME + " exists");
+            System.out.println("--Database exists--");
             statement.executeUpdate("USE " + DB_NAME);
-            System.out.println("Using " + DB_NAME);
+            System.out.println("--Using " + DB_NAME + "--");
         } else {
             loadFrame.updateProgress("Creating database, " + DB_NAME, 50);
-            System.out.println("Creating database, " + DB_NAME);
+            System.out.println("--Creating database, " + DB_NAME + "--");
             statement.executeUpdate("CREATE DATABASE " + DB_NAME);
             statement.executeUpdate("USE " + DB_NAME);
-            System.out.println("Using " + DB_NAME);
+            System.out.println("--Using " + DB_NAME + "--");
             loadFrame.updateProgress("Updating databse", 75);
             generateTables();
-            System.out.println("Database updated");
+            System.out.println("--Database updated--");
         }
         loadFrame.updateProgress("Done...", 100);
         resultSet.close();
@@ -89,12 +92,12 @@ public class DB {
         connection.setAutoCommit(true);
     }
 
-    private static Dictionary<String, Integer> getColInfo(String table) throws SQLException {
+    public static Map<String, Integer> getColInfo(String table) throws SQLException {
         resultSet = statement.executeQuery("SELECT * FROM " + table);
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int col = resultSet.getMetaData().getColumnCount();
 
-        Dictionary<String, Integer> colType = new Hashtable<String, Integer>();
+        Map<String, Integer> colType = Collections.synchronizedMap(new LinkedHashMap<String, Integer>());
 
         for (int i = 1; i <= col; i++) {
             colType.put(resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnType(i));
@@ -110,20 +113,14 @@ public class DB {
 
         resultSet = statement.executeQuery("SELECT * FROM " + table);
 
-        Dictionary<String, Integer> colInfo = getColInfo(table);
+        Map<String, Integer> colInfo = getColInfo(table);
         int[] colTypes = new int[colInfo.size()];
         String[][] tableValues = new String[row + 1][colInfo.size()];
 
         int i = 0;
-        for (Enumeration<String> k = colInfo.keys(); k.hasMoreElements();) {
-            tableValues[0][i] = k.nextElement();
-            i++;
-        }
-
-        i = 0;
-        for (Enumeration<Integer> k = colInfo.elements(); k.hasMoreElements();) {
-            colTypes[i] = k.nextElement();
-            i++;
+        for (Map.Entry<String, Integer> entry : colInfo.entrySet()) {
+            tableValues[0][i] = entry.getKey();
+            colTypes[i++] = entry.getValue();
         }
 
         i = 1;
@@ -136,27 +133,33 @@ public class DB {
         return tableValues;
     }
 
-    public static void insertValue(String table, Dictionary<String, String> data)
+    public static void insertValue(String table, ArrayList<JTextField> data)
             throws SQLException {
-        preparedStatement = connection.prepareStatement("INSERT INTO " + table + "VALUES (?,?)");
 
-        Dictionary<String, Integer> colInfo = getColInfo(table);
+        Map<String, Integer> colInfo = getColInfo(table);
 
-        MapDType.setValue(type, col, val, false, statement, resultSet);
+        preparedStatement = connection
+                .prepareStatement("INSERT INTO " + table + " VALUES (?" + ",?".repeat(colInfo.size() - 1) + ")");
 
+        int i = 0;
+        for (Map.Entry<String, Integer> entry : colInfo.entrySet()) {
+            MapDType.setValue(entry.getValue(), String.valueOf(i + 1), data.get(i++).getText(), false,
+                    preparedStatement, resultSet);
+        }
+
+        preparedStatement.executeUpdate();
         preparedStatement.close();
-
     }
 
     public static void cleanUp() throws SQLException {
         // clean up env
+        System.out.println("--Cleaning up--");
         resultSet.close();
         statement.close();
         connection.close();
     }
 
     public static void main(String[] args) throws SQLException {
-
         try {
             LoadFrame loadFrame = new LoadFrame();
 
