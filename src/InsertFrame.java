@@ -3,25 +3,28 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class InsertFrame extends JFrame implements ActionListener {
-    private JPanel insertPanel, btnPanel;
-    private JButton deptBtn, locBtn, bkBtn, confBtn;
+    private JPanel insertPanel;
+    private JPanel btnPanel;
+    private JButton deptBtn;
+    private JButton locBtn;
+    private JButton bkBtn;
+    private JButton confBtn;
 
-    private ArrayList<JTextField> txtFields = new ArrayList<JTextField>();
+    private ArrayList<JTextField> txtFields = new ArrayList<>();
     private String tableName = "";
 
     InsertFrame() {
         super("Insert");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    DB.cleanUp();
+                    Dept.cleanUp();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -61,19 +64,18 @@ public class InsertFrame extends JFrame implements ActionListener {
         if (e.getSource() == bkBtn) {
             new MenuFrame();
             this.dispose();
-            return;
         } else if (e.getSource() == confBtn) {
             try {
-                DB.insertValue(tableName, txtFields);
+                Dept.insertValue(tableName, txtFields);
                 for (JTextField txt : txtFields) {
                     txt.setText("");
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, ex.toString(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, ex.toString(), "SQL_ERROR", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException nex) {
-                JOptionPane.showMessageDialog(this, nex.toString(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, nex.toString(), "FORMAT_ERROR", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException iex) {
-                JOptionPane.showMessageDialog(this, iex.toString(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, iex.toString(), "ARGUMENT_ERROR", JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
@@ -86,7 +88,7 @@ public class InsertFrame extends JFrame implements ActionListener {
         txtFields.clear();
         tableName = table;
         try {
-            Map<String, Integer> colInfo = DB.getColInfo(table);
+            Map<String, Integer> colInfo = Dept.getColInfo(table);
 
             insertPanel.setBounds(20, 20, 440, colInfo.size() * 80);
             insertPanel.setLayout(new GridLayout(colInfo.size() * 2, 1, 10, 10));
@@ -104,5 +106,4 @@ public class InsertFrame extends JFrame implements ActionListener {
         }
         this.setVisible(true);
     }
-
 }

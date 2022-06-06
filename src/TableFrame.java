@@ -6,25 +6,27 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public class TableFrame extends JFrame implements ActionListener {
-    private JPanel tablePanel, btnPanel;
-    private JTable table;
-    private JButton dept, loc, bk;
+    private JPanel tablePanel;
+    private JPanel btnPanel;
+    private JButton dept;
+    private JButton loc;
+    private JButton bk;
 
     TableFrame() {
-        super("Tables"); // window title
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close when ('x') pressed
+        super("Tables");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    DB.cleanUp();
+                    Dept.cleanUp();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
             }
         });
-        this.setSize(480, 640); // window res
-        this.setLayout(null); // discard default layout
+        this.setSize(480, 640);
+        this.setLayout(null);
 
         tablePanel = new JPanel();
         tablePanel.setBounds(0, 20, 480, 400);
@@ -33,7 +35,6 @@ public class TableFrame extends JFrame implements ActionListener {
         btnPanel.setBounds(60, 480, 360, 40);
         btnPanel.setLayout(new GridLayout(1, 2, 10, 10));
 
-        // instantiate btns
         dept = new JButton("DEPARTMENT");
         dept.addActionListener(this);
         loc = new JButton("DEPT_LOCATIONS");
@@ -45,12 +46,11 @@ public class TableFrame extends JFrame implements ActionListener {
         btnPanel.add(dept);
         btnPanel.add(loc);
 
-        // add panels and txtfield to frame aka window frame
         this.add(tablePanel);
         this.add(btnPanel);
         this.add(bk);
-        this.setResizable(false); // disable ability to resize
-        this.setVisible(true); // make frame visible to user
+        this.setResizable(false);
+        this.setVisible(true);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TableFrame extends JFrame implements ActionListener {
     private void generateTable(String tblName) {
         tablePanel.removeAll();
         try {
-            String[][] result = DB.showTable(tblName);
+            String[][] result = Dept.showTable(tblName);
             int col = result[0].length;
             int row = result.length;
             String[] names = new String[col];
@@ -80,7 +80,7 @@ public class TableFrame extends JFrame implements ActionListener {
                 values[i - 1] = Arrays.copyOfRange(result[i], 0, col);
             }
 
-            table = new JTable(values, names);
+            JTable table = new JTable(values, names);
 
             JScrollPane scrollPane = new JScrollPane(table);
             tablePanel.add(scrollPane);

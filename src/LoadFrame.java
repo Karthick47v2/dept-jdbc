@@ -7,12 +7,12 @@ public class LoadFrame extends JFrame {
 
     LoadFrame() {
         super("Loading...");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    DB.cleanUp();
+                    Dept.cleanUp();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
