@@ -16,10 +16,9 @@ public class TableFrame extends JFrame implements ActionListener {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                try{
-                DB.cleanUp();
-                }
-                catch (SQLException ex){
+                try {
+                    DB.cleanUp();
+                } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -62,7 +61,6 @@ public class TableFrame extends JFrame implements ActionListener {
             return;
         }
         generateTable(e.getSource() == dept ? "DEPARTMENT" : "DEPT_LOCATIONS");
-
     }
 
     private void generateTable(String tblName) {

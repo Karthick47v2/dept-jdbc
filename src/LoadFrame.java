@@ -6,8 +6,8 @@ public class LoadFrame extends JFrame {
     private JProgressBar progressBar;
 
     LoadFrame() {
-        super("Loading..."); // window title
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close when ('x') pressed
+        super("Loading...");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -18,19 +18,17 @@ public class LoadFrame extends JFrame {
                 }
             }
         });
-        this.setSize(480, 640); // window res
-        this.setLayout(null); // discard default layout
+        this.setSize(480, 640);
+        this.setLayout(null);
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setBounds(140, 280, 200, 40);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
 
-        // add panels and txtfield to frame aka window frame
         this.add(progressBar);
-        // this.getContentPane().setBackground(Color.BLACK);
-        this.setResizable(false); // disable ability to resize
-        this.setVisible(true); // make frame visible to user
+        this.setResizable(false);
+        this.setVisible(true);
     }
 
     public void updateProgress(String str, int val) {

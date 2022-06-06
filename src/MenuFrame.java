@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class MenuFrame extends JFrame implements ActionListener {
     private JPanel menuPanel;
-    private JButton shwTable;
+    private JButton shwBtn, insertBtn;
 
     MenuFrame() {
         super("Menu"); // window title
@@ -25,8 +25,10 @@ public class MenuFrame extends JFrame implements ActionListener {
         this.setLayout(null); // discard default layout
 
         // instantiate btns
-        shwTable = new JButton("Show Table");
-        shwTable.addActionListener(this);
+        shwBtn = new JButton("Show Table");
+        shwBtn.addActionListener(this);
+        insertBtn = new JButton("Insert");
+        insertBtn.addActionListener(this);
 
         // // add to array to add properties easily
         // opBtns[0] = mulBtn;
@@ -44,21 +46,23 @@ public class MenuFrame extends JFrame implements ActionListener {
         menuPanel = new JPanel();
         menuPanel.setBounds(5, 140, 455, 430);
         menuPanel.setLayout(new GridLayout(5, 5, 10, 10));
-        menuPanel.setBackground(Color.BLACK);
 
-        menuPanel.add(shwTable);
+        menuPanel.add(shwBtn);
+        menuPanel.add(insertBtn);
 
         // add panels and txtfield to frame aka window frame
         this.add(menuPanel);
-        this.getContentPane().setBackground(Color.BLACK);
         this.setResizable(false); // disable ability to resize
         this.setVisible(true); // make frame visible to user
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == shwTable) {
+        if (e.getSource() == shwBtn) {
             new TableFrame();
+            this.dispose();
+        } else if (e.getSource() == insertBtn) {
+            new InsertFrame();
             this.dispose();
         }
     }
