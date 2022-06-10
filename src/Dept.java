@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 public class Dept {
     static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306";
-    static final String DB_NAME = "test1";
+    static final String DB_NAME = "dept";
 
     static final String USER = "root";
     static final String PASS = "dedsec";
@@ -60,7 +60,7 @@ public class Dept {
         connection.setAutoCommit(false);
 
         statement.executeUpdate("CREATE TABLE DEPARTMENT (Dname VARCHAR(32), Dnumber TINYINT NOT NULL," +
-                " Mgr_ssn VARCHAR(16), Mgr_start_date DATE, PRIMARY KEY (Dnumber))");
+                " Mgr_ssn INT, Mgr_start_date DATE, PRIMARY KEY (Dnumber))");
 
         String insertIN = "INSERT INTO DEPARTMENT (Dname, Dnumber, Mgr_ssn, Mgr_start_date)";
 
@@ -77,8 +77,7 @@ public class Dept {
         statement.addBatch(insertIN + " VALUES(4, 'Stafford')");
         statement.addBatch(insertIN + " VALUES(5, 'Bellaire')");
         statement.addBatch(insertIN + " VALUES(5, 'Sugarland')");
-        statement.addBatch(insertIN + " VALUES(5, 'Dallas')"); /////////////////////////////////////// REPLACING WITH
-                                                               /////////////////////////////////////// HOUSTON
+        statement.addBatch(insertIN + " VALUES(5, 'Dallas')"); // REPLACING 'Houston'
 
         statement.executeBatch();
         connection.commit();
@@ -246,7 +245,7 @@ public class Dept {
             System.out.println("--Connection established--");
 
             // create statement obj
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            statement = connection.createStatement();
 
             // load database if exists or generate
             selectDB(loadFrame);
